@@ -41,3 +41,11 @@ docker info
 GitHub Codespaces is a development host, not a durable production service. Keep
 state in managed storage, back up named volumes deliberately, and use an actual
 deployment platform for always-on workloads.
+
+## Credential boundary validation
+
+The host adapter validates a credential-free endpoint and port before decoding
+certificates, uses a private per-user state directory and umask 077, and rejects
+symlink state and certificate destinations. Offline boundary checks cover invalid
+endpoints, absent credentials and symlinks. A real Docker daemon, certificates,
+and devcontainer image build still require host validation; merge is not deployment.

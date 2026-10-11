@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
+umask 077
 
 context_name="codespace-external"
-state_dir="/workspaces/.docker-host"
+state_dir="${DOCKER_HOST_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/osint-docker-host}"
 cert_dir="${state_dir}/certs"
 
 use_local_dind() {
@@ -15,8 +16,13 @@ if [[ -z "${DOCKER_REMOTE_HOST:-}" ]]; then
   exit 0
 fi
 
-if [[ "${DOCKER_REMOTE_HOST}" != tcp://* ]]; then
-  echo "DOCKER_REMOTE_HOST must use tcp:// with mutual TLS." >&2
+if [[ ! "${DOCKER_REMOTE_HOST}" =~ ^tcp://([A-Za-z0-9][A-Za-z0-9.-]*|\[[0-9A-Fa-f:]+\]):([0-9]{1,5})$ ]]; then
+  echo "DOCKER_REMOTE_HOST must be a credential-free tcp://host:port endpoint with mutual TLS." >&2
+  exit 2
+fi
+port="${BASH_REMATCH[2]}"
+if (( 10#$port < 1 || 10#$port > 65535 )); then
+  echo "DOCKER_REMOTE_HOST port must be between 1 and 65535." >&2
   exit 2
 fi
 
@@ -27,7 +33,17 @@ for name in DOCKER_REMOTE_CA_B64 DOCKER_REMOTE_CERT_B64 DOCKER_REMOTE_KEY_B64; d
   fi
 done
 
+if [[ -L "${state_dir}" || -L "${cert_dir}" ]]; then
+  echo "Docker state/certificate directory must not be a symlink." >&2
+  exit 2
+fi
 install -d -m 0700 "${cert_dir}"
+for filename in ca.pem cert.pem key.pem; do
+  if [[ -L "${cert_dir}/${filename}" ]]; then
+    echo "Docker certificate files must not be symlinks." >&2
+    exit 2
+  fi
+done
 printf '%s' "${DOCKER_REMOTE_CA_B64}" | base64 --decode > "${cert_dir}/ca.pem"
 printf '%s' "${DOCKER_REMOTE_CERT_B64}" | base64 --decode > "${cert_dir}/cert.pem"
 printf '%s' "${DOCKER_REMOTE_KEY_B64}" | base64 --decode > "${cert_dir}/key.pem"
