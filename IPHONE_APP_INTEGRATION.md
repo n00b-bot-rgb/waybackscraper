@@ -8,15 +8,14 @@ Reference-only repositories use it as workflow documentation.
 
 ## Shared implementation
 
-The implementation lives in the private main toolkit; access to that repository is required:
+The implementation lives in the private pipeline repository; access to that repository is required:
 
-- [Deployment, iPhone Shortcut setup, and API contract](https://github.com/n00b-bot-rgb/osint-scraping-toolkit/blob/79170b71314a6a4a8508ba702fb0f932765f3f30/iphone_intake/README.md)
-- [Portable Python client](https://github.com/n00b-bot-rgb/osint-scraping-toolkit/blob/79170b71314a6a4a8508ba702fb0f932765f3f30/iphone_intake/client.py)
-- [Service implementation](https://github.com/n00b-bot-rgb/osint-scraping-toolkit/blob/79170b71314a6a4a8508ba702fb0f932765f3f30/iphone_intake/server.py)
-- [Main implementation PR](https://github.com/n00b-bot-rgb/osint-scraping-toolkit/pull/3)
+- [Deployment, iPhone Shortcut setup, and API contract](https://github.com/n00b-bot-rgb/osint-pipeline/blob/1f9f28e25b3f9b3abf465e717674e5c5027c3bf8/iphone_intake/README.md)
+- [Portable Python client](https://github.com/n00b-bot-rgb/osint-pipeline/blob/1f9f28e25b3f9b3abf465e717674e5c5027c3bf8/iphone_intake/client.py)
+- [Service implementation](https://github.com/n00b-bot-rgb/osint-pipeline/blob/1f9f28e25b3f9b3abf465e717674e5c5027c3bf8/iphone_intake/server.py)
 
-Pinned implementation commit: `79170b71314a6a4a8508ba702fb0f932765f3f30`.
-Review and check out that version in a separate toolkit checkout. Do not download and
+Pinned implementation commit: `1f9f28e25b3f9b3abf465e717674e5c5027c3bf8`.
+Review and check out that version in a separate pipeline checkout. Do not download and
 execute a mutable script from a URL. No credentials or personal report content are
 included here.
 
@@ -42,7 +41,7 @@ OpenAI key or Docker token.
 ```bash
 export INTAKE_URL=https://YOUR-PRIVATE-HOST
 export INTAKE_TOKEN_FILE=/absolute/private/path/intake-token
-python3 /absolute/path/osint-scraping-toolkit/iphone_intake/client.py \\
+python3 /absolute/path/osint-pipeline/iphone_intake/client.py \\
   /absolute/private/path/sample.txt --case case-demo \\
   --repository n00b-bot-rgb/waybackscraper --source intelius
 ```
@@ -94,8 +93,8 @@ different case or auto-broadcast material across projects.
 
 ## Activation and validation status
 
-The central implementation passed 11 synthetic local tests, including a real HTTP
-upload/download. This repository receives documentation only: no native code paths,
+The service is available at the pinned pipeline commit above. This repository
+receives documentation only: no native code paths,
 CI secrets, deployment, iPhone actions, or running services have been changed.
 Docker build/runtime, private HTTPS ingress, and the actual iPhone Shortcut require
 host/device validation. Follow the central README to complete activation.
